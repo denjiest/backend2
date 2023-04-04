@@ -11,6 +11,10 @@ app.get('/', (req,res)=>{
     res.send('welcome to the new e')
 })
 
+app.get('/local', (req,res)=>{
+    res.send('berjalan di localhost')
+})
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
