@@ -2,6 +2,8 @@ import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
 
+import UserRoute from "./routes/UserRoutes.js"
+
 dotenv.config();
 
 const app = express();
@@ -23,6 +25,7 @@ app.use(function(req, res, next) {
     next();
   });
   
+app.use(UserRoute)
 
 const port = process.env.PORT || 3000;
 
