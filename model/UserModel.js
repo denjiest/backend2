@@ -8,10 +8,24 @@ const User = db.define('users',{
         autoIncrement:true
     },
     username :{
-        type:Sequelize.STRING
+        AllowNull:false,
+        type:Sequelize.STRING,
+        unique:{
+            value:"username",
+            msg:"Username Sudah Ada !"
+        }
     },
     email:{
-        type:Sequelize.STRING
+        AllowNull:false,
+        type:Sequelize.STRING,
+        unique:{
+            value:"email",
+            msg:"Email Sudah Ada"
+        }
+    },
+    password:{
+        type:Sequelize.STRING,
+        allowNull:false
     }
 },{
     freezeTableName : true,

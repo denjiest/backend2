@@ -3,6 +3,7 @@ import cors from "cors"
 import dotenv from "dotenv"
 
 import UserRoute from "./routes/UserRoutes.js"
+import AuthRoute from "./routes/AuthRoute.js"
 
 dotenv.config();
 
@@ -25,7 +26,8 @@ app.use(function(req, res, next) {
     next();
   });
   
-app.use(UserRoute)
+app.use(UserRoute,
+  AuthRoute)
 
 const port = process.env.PORT || 3000;
 
