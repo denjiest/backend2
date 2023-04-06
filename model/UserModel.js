@@ -26,6 +26,10 @@ const User = db.define('users',{
     password:{
         type:Sequelize.STRING,
         allowNull:false
+    },
+    image:{
+        type: Sequelize.STRING,
+        defaultValue:"images/default.jpg"
     }
 },{
     freezeTableName : true,

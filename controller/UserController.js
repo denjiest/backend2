@@ -1,5 +1,6 @@
 import User from "../model/UserModel.js"
 import argon2 from "argon2"
+import jwt from "jsonwebtoken"
 
 export const getAllAkun = async(req,res)=>{
     try{
@@ -44,14 +45,62 @@ export const createAkun = async(req,res)=>{
                 const errors = error.errors
          
                const errorList = errors.map(e => {
-                 let obj = e.message
-                 return obj;
+                const coba = e.message
+                // return coba;
+                const error_username = "Username sudah ada"
+                const error_email = "Email sudah ada"
+                if(coba === "username must be unique")
+                 return error_username;
+                else if (coba === "email must be unique")
+                return error_email;
                })
                
                return res.status(400).json({
                  message: errorList.toString()
                })
+             }else{
+                res.status(400).json({message:error.message})
              }
-        // res.status(400).json({message:error.message})
+    }
+}
+
+export const updateAkun = async(req,res)=>{
+    try{
+        const token = req.header("auth-token")
+        const token_decode = jwt.decode(token)
+        const token_email = token_decode.email
+
+        if(!req.file){
+        const update = await User.update({
+            username:req.body.username,
+        },{
+            where:{
+                email:token_email
+            }
+        })
+        const cari = await User.findOne({
+            where:{
+                email:token_email
+            }
+        })
+        res.status(200).json({message:"Berhasil Update Akun", data:cari})
+    }else{
+        const update = await User.update({
+            username:req.body.username,
+            image: req.file.path.replace("\\","/")
+        },{
+            where:{
+                email:token_email
+            }
+        })
+        const cari = await User.findOne({
+            where:{
+                email:token_email
+            }
+        })
+        res.status(200).json({message:"Berhasil Update Akun", data:cari})
+    }
+    }catch(error){
+        res.status(400).json({message:error.message})
     }
 }
