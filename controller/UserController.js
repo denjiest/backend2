@@ -13,6 +13,12 @@ export const getAllAkun = async(req,res)=>{
 }
 
 export const createAkun = async(req,res)=>{
+    if(req.body.username === "" || req.body.username === null) 
+    return res.status(400).json({message:"Username harus diisi"})
+    if(req.body.email === "" || req.body.email === null)
+    return res.status(400).json({message:"Email harus diisi"})
+    if(req.body.password === "" || req.body.password === null)
+    return res.status(400).json({message:"password harus diisi"}) 
     try{
         const {confPassword} = req.body
         if(confPassword === null) return res.status(400).json({message:"Confirm Password harus diisi"})
@@ -34,6 +40,18 @@ export const createAkun = async(req,res)=>{
 
         res.status(200).json({message:"berhasil membuat akun", data:showdata})
     }catch(error){
-        res.status(400).json({message:error.message})
+        if (error.name === 'SequelizeUniqueConstraintError') {
+                const errors = error.errors
+         
+               const errorList = errors.map(e => {
+                 let obj = e.message
+                 return obj;
+               })
+               
+               return res.status(400).json({
+                 message: errorList.toString()
+               })
+             }
+        // res.status(400).json({message:error.message})
     }
 }

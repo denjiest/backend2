@@ -12,7 +12,7 @@ const User = db.define('users',{
         type:Sequelize.STRING,
         unique:{
             value:"username",
-            msg:"Username Sudah Ada !"
+            // msg:"Username Sudah Ada !"
         }
     },
     email:{
@@ -20,7 +20,7 @@ const User = db.define('users',{
         type:Sequelize.STRING,
         unique:{
             value:"email",
-            msg:"Email Sudah Ada"
+            // msg:"Email Sudah Ada"
         }
     },
     password:{
