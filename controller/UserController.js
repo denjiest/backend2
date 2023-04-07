@@ -14,6 +14,8 @@ export const getAllAkun = async(req,res)=>{
 }
 
 export const createAkun = async(req,res)=>{
+    if(req.body.name === "" || req.body.name === null) 
+    return res.status(400).json({message:"Nama harus diisi"})
     if(req.body.username === "" || req.body.username === null) 
     return res.status(400).json({message:"Username harus diisi"})
     if(req.body.email === "" || req.body.email === null)
@@ -27,6 +29,7 @@ export const createAkun = async(req,res)=>{
         const hashpassword = await argon2.hash(req.body.password)
         
         const buat = await User.create({
+            name:req.body.name,
             username :req.body.username,
             email:req.body.email,
             password:hashpassword
@@ -47,12 +50,15 @@ export const createAkun = async(req,res)=>{
                const errorList = errors.map(e => {
                 const coba = e.message
                 // return coba;
+                const error_name = "Nama Sudah ada"
                 const error_username = "Username sudah ada"
                 const error_email = "Email sudah ada"
                 if(coba === "username must be unique")
                  return error_username;
                 else if (coba === "email must be unique")
                 return error_email;
+                else if( coba === "name must be unique")
+                return error_name;
                })
                
                return res.status(400).json({
@@ -70,9 +76,24 @@ export const updateAkun = async(req,res)=>{
         const token_decode = jwt.decode(token)
         const token_email = token_decode.email
 
+        const user = await User.findOne({
+            where:{
+                email:token_email
+            }
+        })
+
+        let hashPassword;
+        if(req.body.password === "" || req.body.password === null){
+            hashPassword = user.password
+        }else{
+            hashPassword = await argon2.hash(req.body.password);
+        }
+
         if(!req.file){
         const update = await User.update({
+            name:req.body.name,
             username:req.body.username,
+            password:hashPassword
         },{
             where:{
                 email:token_email
@@ -86,7 +107,9 @@ export const updateAkun = async(req,res)=>{
         res.status(200).json({message:"Berhasil Update Akun", data:cari})
     }else{
         const update = await User.update({
+            name:req.body.name,
             username:req.body.username,
+            password:hashPassword,
             image: req.file.path.replace("\\","/")
         },{
             where:{
@@ -101,6 +124,11 @@ export const updateAkun = async(req,res)=>{
         res.status(200).json({message:"Berhasil Update Akun", data:cari})
     }
     }catch(error){
-        res.status(400).json({message:error.message})
+        if(error.name === "SequelizeUniqueConstraintError"){
+            const errors = error.errors
+            res.status(400).json({message:errors})
+        }else{
+            res.status(400).json({message:error.message})
+        }
     }
 }

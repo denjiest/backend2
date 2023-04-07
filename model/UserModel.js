@@ -7,6 +7,13 @@ const User = db.define('users',{
         type:Sequelize.INTEGER,
         autoIncrement:true
     },
+    name:{
+        AllowNUll:false,
+        type:Sequelize.STRING,
+        unique:{
+            value:"name"
+        }
+    },
     username :{
         AllowNull:false,
         type:Sequelize.STRING,
