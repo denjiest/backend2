@@ -1,6 +1,7 @@
-import User from "../model/UserModel.js"
+import User from "../models/UserModel.js"
 import argon2 from "argon2"
 import jwt from "jsonwebtoken"
+import nodemailer from "nodemailer"
 
 export const getAllAkun = async(req,res)=>{
     try{
@@ -40,9 +41,30 @@ export const createAkun = async(req,res)=>{
                 email:req.body.email
             },
             attributes:{exclude:['password']}
-        }) 
+        })
+        
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: process.env.EMAIL,
+              pass: process.env.PASS,
+            }
+          });
+      
+          const mailOptions = {
+            from: process.env.EMAIL,
+            to: req.body.email,
+            subject:"Register Berhasil",
+            // text:"Register Berhasil akun yang bernama "+req.body.name+"",
+            html: '<h1>Halo!</h1><p>Selamat Registrasi atas nama <b>'+req.body.name+'</b> Berhasil, anjay lu bro!.</p><p>Semoga bermanfaat!</p><p>Salam <br>Jimbroy</p>'
+          };
+          
+      
+          transporter.sendMail(mailOptions);
 
         res.status(200).json({message:"berhasil membuat akun", data:showdata})
+
+    //Handling Error 
     }catch(error){
         if (error.name === 'SequelizeUniqueConstraintError') {
                 const errors = error.errors

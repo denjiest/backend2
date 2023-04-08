@@ -1,8 +1,9 @@
-import User from "../model/UserModel.js"
+import User from "../models/UserModel.js"
 import argon2 from "argon2"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 import fs from "fs"
+import db from "../config/Database.js"
 
 dotenv.config();
 
@@ -30,7 +31,8 @@ export const LoginUser = async (req,res)=>{
             const name = user.name
             const username = user.username
             const email = user.email
-           res.status(200).json({message:"Berhasil Login", data:{name,username,email,token}})
+            const waktu = Date.now()
+           res.status(200).json({message:"Berhasil Login", data:{name,username,email,token,waktu}})
         }
     }catch(error){
         res.status(400).json({message:error.message})
@@ -48,7 +50,11 @@ export const Me = async(req,res)=>{
                 email : token_email
             },
             attributes:{
-                exclude:['password']
+                exclude:['password'],
+                include:[
+                    [db.fn('date_format', db.fn('convert_tz', db.col('createdAt'), '+00:00', '+07:00' ),"%d %M %Y %H:%i:%s"), 'createdAt'],  
+                    [db.fn('date_format', db.fn('convert_tz', db.col('updatedAt'), '+00:00', '+07:00'), "%d %M %Y %H:%i:%s"), 'updatedAt'],  
+                ]
             }
         })
         res.status(200).json({message:"Berhasil Mencari", data:cari})
